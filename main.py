@@ -36,11 +36,10 @@ class Record:
         self.phones = []
     
     # Реалізація класу
-
-    def add_phone(self, number: str):
+    def add_phone(self, number: str)-> None:
         self.phones.append(Phone(number))
 
-    def edit_phone(self, old_phone, new_phone):
+    def edit_phone(self, old_phone: str, new_phone: str)-> None:
         is_edited = False
         for phone in self.phones:
             if phone.value == old_phone:
@@ -50,39 +49,51 @@ class Record:
         # Якщо номера не існує, то викликається помилка  
         if not is_edited:
             raise ValueError
-        
 
-    def find_phone(self, find_phone):
+
+        # Не розумію, чого не працює наступни чином. 
+        # Через index() не працює. Розумію, що в списку знаходиться об'єкт,
+        # але як при цьому задіяти index() - ні(.
+        # Працює тільки перебором в циклі for.
+        # self.indx_phone = self.phones.index(old_phone)
+        # self.phones[self.indx_phone].value = new_phone
+
+
+    def find_phone(self, find_phone: str)-> Phone:
         for indx, phone in enumerate(self.phones):
             if phone.value == find_phone:
-                return self.phones[indx]        
+                return self.phones[indx]
+
+
+        # Не розумію, як правильно використати метод index() в списку,
+        # якщо елемент списку це об'єкт класу.
+        # self.indx: int = self.phones.index()
+        # return self.phones[self.indx]
+
+
+              
             
-    def remove_phone(self, remove_phone):
+    def remove_phone(self, remove_phone)-> None:
         for indx, phone in enumerate(self.phones):
             if phone.value == remove_phone:
                 del self.phones[indx]
     
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+        return f"Contact name: {self.name.value:<10}, phones: {'; '.join(p.value for p in self.phones)}"
 
 
 class AddressBook(UserDict):
 
     # Реалізація класу
 
-    def add_record(self, record: Record):
+    def add_record(self, record: Record)-> None:
+        self.data[record.name.value] = record
 
-        if record.name.value not in self.data:
-            self.data[record.name.value] = record
-        elif record.name.value in self.data:
-            
-            self.data[record.name.value]
-
-    def delete(self, name):
+    def delete(self, name)-> None:
         if name in self.data:
             del self.data[name]
 
-    def find(self, name: str):
+    def find(self, name: str)-> Record:
         if name in self.data:
             return self.data[name]
         
@@ -101,7 +112,6 @@ class AddressBook(UserDict):
 
 
 
-
 if __name__ == '__main__':
 
     # Створення нової адресної книги
@@ -115,12 +125,32 @@ if __name__ == '__main__':
     # Додавання запису John до адресної книги
     book.add_record(john_record)
 
+
     # Створення та додавання нового запису Jane
     jane_record = Record('Jane')
     jane_record.add_phone('9876543210')
 
+
     print('--- Вивід всіх записів у книзі ---')
-    book.show_all()
+    book_info = book.show_all()
+    print(book_info)
+
+
+    print('--- Додавання запису без номеру ---')
+    bob_record = Record('Bob')
+    book.add_record(bob_record)
+
+    book_info = book.show_all()
+    print(book_info)
+
+    print('--- Додавання номеру до Bob ---')
+    bob: Record = book.find('Bob')
+    print(bob)
+    bob.add_phone('0986521232')
+
+    book_info = book.show_all()
+    print(book_info)
+
 
     print('--- Знаходження та редагування телефону для John ---')
     john = book.find('John')
